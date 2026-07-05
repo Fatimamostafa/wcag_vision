@@ -16,6 +16,7 @@ environment:
 # Add apps/a11y_scanner once it is scaffolded.
 workspace:
   - packages/wcag_vision
+  - packages/wcag_vision/example
 
 dev_dependencies:
   melos: ^8.1.0
