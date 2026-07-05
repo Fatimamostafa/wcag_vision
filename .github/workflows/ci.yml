@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      # Resolves the whole pub workspace (wcag_vision + its example) and
+      # installs the workspace-pinned Melos from the root dev_dependencies,
+      # so CI runs the exact Melos version in pubspec.lock rather than a
+      # separately-activated global one.
+      - name: Bootstrap workspace
+        run: flutter pub get
+
+      # Runs `dart analyze --fatal-infos --fatal-warnings` in every
+      # workspace member (package and example) — zero tolerance, matching
+      # the local melos script (CLAUDE.md §8).
+      - name: Analyze
+        run: dart run melos run analyze
+
+      # Runs `flutter test` in every member with a test/ directory.
+      - name: Test
+        run: dart run melos run test

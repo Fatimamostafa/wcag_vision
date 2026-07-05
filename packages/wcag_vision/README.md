@@ -1,5 +1,10 @@
 # wcag_vision
 
+[![CI](https://github.com/Fatimamostafa/wcag_vision/actions/workflows/ci.yml/badge.svg)](https://github.com/Fatimamostafa/wcag_vision/actions/workflows/ci.yml)
+[![pub package](https://img.shields.io/pub/v/wcag_vision.svg)](https://pub.dev/packages/wcag_vision)
+[![pub points](https://img.shields.io/pub/points/wcag_vision)](https://pub.dev/packages/wcag_vision/score)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Fatimamostafa/wcag_vision/blob/main/packages/wcag_vision/LICENSE)
+
 wcag_vision helps you build accessible Flutter apps: check color contrast,
 preview how colors look under color blindness, and pull the dominant colors
 out of any image - no accessibility background needed to get started.
