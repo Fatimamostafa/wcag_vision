@@ -1,0 +1,10 @@
+# Base lint set per CLAUDE.md §8. very_good_analysis is stricter than
+# flutter_lints and is enforced with zero tolerance in CI
+# (`dart analyze --fatal-infos --fatal-warnings`).
+include: package:very_good_analysis/analysis_options.yaml
+
+# Project-specific rules layer on top here as the codebase grows (e.g. the
+# custom "no hardcoded token value" lint from §4/§8).
+
+# Additional information about this file can be found at
+# https://dart.dev/guides/language/analysis-options
