@@ -8,6 +8,14 @@ just the spec's own math as pure, deterministic functions.
 
 ## What it implements
 
+The **CVD simulation module**:
+
+- **Colour vision deficiency simulation** — protanopia, deuteranopia, and
+  tritanopia via `simulateCvd`, using the physiologically-based model of
+  [Machado, Oliveira & Fairchild (2009)](https://doi.org/10.1109/TVCG.2009.113)
+  (severity-1.0 matrices, applied in linear RGB). Greys are invariant,
+  `CvdType.none` is the identity, and alpha passes through untouched.
+
 The **contrast module**, covering:
 
 - **Relative luminance** — the WCAG 2.x definition
@@ -63,8 +71,6 @@ the raw calculations.
 
 Planned but **not yet implemented**:
 
-- **CVD simulation** — colour-vision-deficiency (protanopia, deuteranopia,
-  tritanopia) matrix transforms.
 - **K-means colour extraction** — dominant-colour sampling from images and
   camera frames, designed to run off the main isolate.
 

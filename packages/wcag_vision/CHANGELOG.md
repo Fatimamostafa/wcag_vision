@@ -10,6 +10,17 @@ and this project adheres to
 
 ### Added
 
+- CVD (colour vision deficiency) simulation:
+  - `CvdType` — `none`, `protanopia`, `deuteranopia`, `tritanopia`.
+  - `simulateCvd` — applies the Machado, Oliveira & Fairchild (2009)
+    physiologically-based model (severity-1.0 matrices, applied in linear
+    RGB with IEC 61966-2-1 sRGB decode/encode) to a `Color`. `CvdType.none`
+    is the identity; achromatic colours are invariant; alpha passes through
+    untouched.
+- Unit tests for CVD simulation: identity, achromatic invariance, hand-
+  computed reference values from the published matrices, red–green
+  confusion behaviour, clamping, and alpha preservation.
+
 - WCAG 2.x contrast engine:
   - `relativeLuminance` — relative luminance per the WCAG definition,
     including the sRGB linearization transfer function.
