@@ -3,7 +3,7 @@ description: >-
   Offline, algorithmic WCAG accessibility engine: colour contrast ratios,
   CVD simulation, and k-means colour extraction. Pure-Dart core.
 version: 0.0.1
-homepage:
+repository: https://github.com/Fatimamostafa/wcag_vision
 
 # Joins the Dart pub workspace at the repo root (see /pubspec.yaml). Resolution
 # is shared across the monorepo; do not add a per-package pubspec.lock.

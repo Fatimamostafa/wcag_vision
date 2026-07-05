@@ -96,6 +96,8 @@ tokens/
 
 Corrected 2026-07-05 per §13 (update the doc when reality disagrees, don't silently deviate). New member packages/apps must be added to the `workspace:` list in the root pubspec.
 
+Any package or example physically located inside the workspace root must be added to the root pubspec.yaml's `workspace:` list to resolve correctly under Melos 8 + pub workspaces — this includes example/ apps, not just published packages.
+
 ---
 
 ## 4. Design Token Architecture (tool-agnostic by design)
