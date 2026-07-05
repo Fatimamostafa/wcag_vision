@@ -1,0 +1,25 @@
+# Dart / Flutter
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+*.iml
+
+# Melos / pub workspace: the root lockfile is the single source of truth and
+# IS committed (pubspec.lock below is intentionally NOT ignored at the root).
+# Per-package lockfiles do not exist in workspace mode.
+
+# skills tool working clones — raw registry checkouts used only to sync into
+# .claude/skills/. The installed skills under .claude/skills/ ARE committed
+# (CLAUDE.md §14); these upstream clones are not.
+.dart_skills/
+
+# Claude Code local (machine-specific) settings — .claude/skills/ IS committed
+.claude/settings.local.json
+
+# IDE
+.idea/
+.vscode/
+
+# macOS
+.DS_Store

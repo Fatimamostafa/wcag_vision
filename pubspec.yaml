@@ -1,0 +1,34 @@
+name: wcag_vision_workspace
+
+# Workspace root only — this package is never published and ships no code.
+# It exists so Dart's pub workspaces (Flutter 3.44 / Dart 3.12) resolve every
+# member package against a single, shared lockfile, and so Melos can run tasks
+# across the monorepo.
+#
+# Layout per CLAUDE.md §3: Melos 8 + Dart pub workspaces. Melos derives its
+# package list from the pub `workspace:` block below and reads its config from
+# the `melos:` key in THIS file — there is deliberately no standalone
+# melos.yaml (legacy layout; its scripts are ignored in workspace mode).
+environment:
+  sdk: ^3.12.2
+
+# Pub workspace members. Melos also treats these as its package set.
+# Add apps/a11y_scanner once it is scaffolded.
+workspace:
+  - packages/wcag_vision
+
+dev_dependencies:
+  melos: ^8.1.0
+
+melos:
+  scripts:
+    analyze:
+      description: >-
+        Analyze every package with zero tolerance for issues (CLAUDE.md §8).
+      exec: dart analyze --fatal-infos --fatal-warnings .
+
+    test:
+      description: Run tests in every package that has a test/ directory.
+      exec: flutter test
+      packageFilters:
+        dirExists: test
