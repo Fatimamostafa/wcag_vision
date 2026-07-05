@@ -1,5 +1,9 @@
 # wcag_vision
 
+wcag_vision helps you build accessible Flutter apps: check color contrast,
+preview how colors look under color blindness, and pull the dominant colors
+out of any image - no accessibility background needed to get started.
+
 An offline, algorithmic WCAG accessibility engine for Flutter and Dart.
 
 `wcag_vision` computes colour contrast exactly as specified by

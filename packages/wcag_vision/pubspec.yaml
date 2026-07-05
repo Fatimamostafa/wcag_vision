@@ -1,7 +1,8 @@
 name: wcag_vision
 description: >-
-  Offline, algorithmic WCAG accessibility engine: colour contrast ratios,
-  CVD simulation, and k-means colour extraction. Pure-Dart core.
+  Check color contrast, simulate color blindness, and extract dominant
+  colors from images — accessibility tools for Flutter, no expertise
+  required.
 version: 0.0.1
 repository: https://github.com/Fatimamostafa/wcag_vision
 
