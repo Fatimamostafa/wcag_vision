@@ -10,6 +10,23 @@ and this project adheres to
 
 ### Added
 
+- K-means dominant-colour extraction:
+  - `extractDominantColors` — pure, synchronous, deterministic Lloyd's
+    k-means over sRGB with seeded k-means++ initialisation (Arthur &
+    Vassilvitskii 2007). Configurable `k` (default 6), `seed`,
+    `maxIterations` (default 25), `convergenceThreshold` (default 1/255)
+    and `maxSamples` (default 4096) stratified random downsampling — one
+    seeded draw per grid cell, immune to the aliasing stride sampling
+    suffers on periodic patterns, and fully reproducible via `seed`.
+  - `extractDominantColorsAsync` — one-shot, single-capture entry point
+    running the same extraction off the main isolate via `Isolate.run`
+    (no Flutter dependency); continuous per-frame streaming is explicitly
+    out of scope.
+  - `ExtractedColor` — centroid colour plus population share, sorted
+    largest-first.
+- Unit tests for extraction: solid/two-colour images, degenerate `k` >
+  distinct colours, convergence within the iteration cap, seeded
+  determinism, downsampling proportions, and sync/async equivalence.
 - CVD (colour vision deficiency) simulation:
   - `CvdType` — `none`, `protanopia`, `deuteranopia`, `tritanopia`.
   - `simulateCvd` — applies the Machado, Oliveira & Fairchild (2009)

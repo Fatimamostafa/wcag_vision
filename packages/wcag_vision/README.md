@@ -8,6 +8,21 @@ just the spec's own math as pure, deterministic functions.
 
 ## What it implements
 
+The **colour extraction module**:
+
+- **K-means dominant-colour extraction** — `extractDominantColors` runs
+  deterministic Lloyd's k-means with seeded
+  [k-means++](https://dl.acm.org/doi/10.5555/1283383.1283494) initialisation
+  (Arthur & Vassilvitskii, 2007) over sRGB, with configurable cluster count,
+  convergence controls, and stratified random downsampling (one seeded draw
+  per grid cell — alias-free on periodic patterns, reproducible via the
+  seed) for full-resolution photos. Clustering runs in sRGB today; **OKLab**
+  is the named target for a future perceptual-clustering refinement.
+  `extractDominantColorsAsync` runs the same extraction off the main
+  isolate via `Isolate.run` — designed for **one-shot, single-capture**
+  analysis (tap → analyse one still frame); continuous per-frame streaming
+  is out of scope by design.
+
 The **CVD simulation module**:
 
 - **Colour vision deficiency simulation** — protanopia, deuteranopia, and
@@ -66,13 +81,6 @@ void main() {
 Lower-level primitives (`relativeLuminance`, `contrastRatio`,
 `compositeOver`, `wcagThreshold`) are also exported for callers that need
 the raw calculations.
-
-## Roadmap
-
-Planned but **not yet implemented**:
-
-- **K-means colour extraction** — dominant-colour sampling from images and
-  camera frames, designed to run off the main isolate.
 
 ## Design principles
 

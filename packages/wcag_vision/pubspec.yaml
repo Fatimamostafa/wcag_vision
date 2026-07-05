@@ -16,6 +16,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # Pure-Dart annotations (@immutable) — used instead of
+  # flutter/foundation.dart in modules that avoid Flutter imports.
+  meta: ^1.16.0
 
 dev_dependencies:
   flutter_test:
