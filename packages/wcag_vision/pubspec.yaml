@@ -3,7 +3,7 @@ description: >-
   Check color contrast, simulate color blindness, and extract dominant
   colors from images — accessibility tools for Flutter, no expertise
   required.
-version: 0.0.2
+version: 0.1.0
 repository: https://github.com/Fatimamostafa/wcag_vision
 
 # Joins the Dart pub workspace at the repo root (see /pubspec.yaml). Resolution
