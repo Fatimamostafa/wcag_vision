@@ -30,6 +30,11 @@ jobs:
       - name: Analyze
         run: dart run melos run analyze
 
-      # Runs `flutter test` in every member with a test/ directory.
-      - name: Test
-        run: dart run melos run test
+      # wcag_vision is pure Dart (no Flutter dependency); its tests run
+      # under `dart test`. The example is a real Flutter app and needs
+      # `flutter test`. See the melos scripts in the root pubspec.yaml.
+      - name: Test (pure-Dart packages)
+        run: dart run melos run test:dart
+
+      - name: Test (Flutter packages/apps)
+        run: dart run melos run test:flutter

@@ -1,6 +1,5 @@
-import 'dart:ui';
-
 import 'package:meta/meta.dart';
+import 'package:wcag_vision/src/color/wcag_color.dart';
 
 /// One dominant colour found by k-means extraction, together with how much
 /// of the sampled image it accounts for.
@@ -11,7 +10,7 @@ class ExtractedColor {
 
   /// The cluster's centroid colour. Always fully opaque — extraction
   /// clusters on the RGB components only and ignores alpha.
-  final Color color;
+  final WcagColor color;
 
   /// The fraction of sampled pixels assigned to this cluster, in `(0, 1]`.
   ///

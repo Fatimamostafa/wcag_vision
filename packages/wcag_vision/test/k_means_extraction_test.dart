@@ -1,29 +1,29 @@
 import 'dart:math' as math;
-import 'dart:ui';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:wcag_vision/wcag_vision.dart';
 
-const Color red = Color(0xFFFF0000);
-const Color green = Color(0xFF00FF00);
-const Color blue = Color(0xFF0000FF);
+const WcagColor red = WcagColor(0xFFFF0000);
+const WcagColor green = WcagColor(0xFF00FF00);
+const WcagColor blue = WcagColor(0xFF0000FF);
 
 /// A synthetic image of [count] pixels of a single [color].
-List<Color> solidImage(Color color, int count) => List.filled(count, color);
+List<WcagColor> solidImage(WcagColor color, int count) =>
+    List.filled(count, color);
 
 /// A synthetic image with [redCount] red pixels followed by [blueCount]
 /// blue ones.
-List<Color> redBlueImage(int redCount, int blueCount) => [
+List<WcagColor> redBlueImage(int redCount, int blueCount) => [
       ...solidImage(red, redCount),
       ...solidImage(blue, blueCount),
     ];
 
 /// A noisy three-blob image: pixels scattered tightly around red, green
 /// and blue anchors, generated deterministically from [seed].
-List<Color> threeBlobImage(int perBlob, {int seed = 7}) {
+List<WcagColor> threeBlobImage(int perBlob, {int seed = 7}) {
   final rng = math.Random(seed);
   double jitter(double v) => (v + (rng.nextDouble() - 0.5) * 0.1).clamp(0, 1);
-  Color around(Color anchor) => Color.from(
+  WcagColor around(WcagColor anchor) => WcagColor.from(
         alpha: 1,
         red: jitter(anchor.r),
         green: jitter(anchor.g),
@@ -36,7 +36,8 @@ List<Color> threeBlobImage(int perBlob, {int seed = 7}) {
   ];
 }
 
-void expectColorCloseTo(Color actual, Color expected, {double tol = 1e-9}) {
+void expectColorCloseTo(WcagColor actual, WcagColor expected,
+    {double tol = 1e-9}) {
   expect(actual.r, closeTo(expected.r, tol));
   expect(actual.g, closeTo(expected.g, tol));
   expect(actual.b, closeTo(expected.b, tol));
@@ -45,7 +46,7 @@ void expectColorCloseTo(Color actual, Color expected, {double tol = 1e-9}) {
 void main() {
   group('extractDominantColors — basic clustering', () {
     test('solid-colour image yields a single cluster of that colour', () {
-      const olive = Color(0xFF808000);
+      const olive = WcagColor(0xFF808000);
       final result = extractDominantColors(solidImage(olive, 500));
       expect(result, hasLength(1));
       expectColorCloseTo(result.first.color, olive);
@@ -69,7 +70,8 @@ void main() {
     });
 
     test('returned colours are opaque regardless of input alpha', () {
-      const translucent = Color.from(alpha: 0.3, red: 1, green: 0, blue: 0);
+      const translucent =
+          WcagColor.from(alpha: 0.3, red: 1, green: 0, blue: 0);
       final result = extractDominantColors(solidImage(translucent, 100));
       expect(result.single.color.a, 1.0);
     });

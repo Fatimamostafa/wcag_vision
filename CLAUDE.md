@@ -207,7 +207,7 @@ CI runs all three via GitHub Actions + Melos scripts on every PR; golden test di
 
 - Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`) — enables auto-changelog generation for the package, which is another small but real piece of professional-grade evidence.
 - GitHub Actions: analyze → test → golden test → (on tag) publish to pub.dev.
-- Melos scripts (`melos run test`, `melos run analyze`) as the single entrypoint, matching your existing workflow.
+- Melos scripts as the single entrypoint, matching your existing workflow: `melos run analyze` (all packages), `melos run test:dart` (pure-Dart packages — `wcag_vision` itself, see §2/§6), `melos run test:flutter` (Flutter packages/apps — the example, and later `apps/a11y_scanner`).
 - Never include a Co-Authored-By trailer, "Generated with Claude Code" footer, or any AI-attribution line in commit messages or PR descriptions. Commits are authored solely as the repo owner. (Belt-and-suspenders alongside the `attribution` settings in `.claude/settings.local.json` — the settings key alone is sometimes inconsistently honored.)
 
 ---

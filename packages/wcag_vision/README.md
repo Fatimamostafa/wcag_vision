@@ -9,11 +9,33 @@ wcag_vision helps you build accessible Flutter apps: check color contrast,
 preview how colors look under color blindness, and pull the dominant colors
 out of any image - no accessibility background needed to get started.
 
-An offline, algorithmic WCAG accessibility engine for Flutter and Dart.
-
-`wcag_vision` computes colour contrast exactly as specified by
+An offline, algorithmic WCAG accessibility engine — **pure Dart, no Flutter
+dependency**. It runs anywhere Dart runs (CLI tools, servers, web, and
+Flutter apps alike) and computes colour contrast exactly as specified by
 [WCAG 2.1](https://www.w3.org/TR/WCAG21/) — no network calls, no heuristics,
 just the spec's own math as pure, deterministic functions.
+
+## Using it from Flutter
+
+Because this package has no Flutter dependency, it represents colours with
+its own [`WcagColor`](lib/src/color/wcag_color.dart) rather than `dart:ui`'s
+`Color`. Converting between the two at your app's UI boundary is a
+one-line, lossless operation, since both share the same component model
+(straight alpha, each channel a `double` in `[0, 1]`):
+
+```dart
+import 'package:flutter/material.dart' as material;
+import 'package:wcag_vision/wcag_vision.dart';
+
+WcagColor toWcagColor(material.Color c) =>
+    WcagColor.from(alpha: c.a, red: c.r, green: c.g, blue: c.b);
+
+material.Color toFlutterColor(WcagColor c) =>
+    material.Color.from(alpha: c.a, red: c.r, green: c.g, blue: c.b);
+```
+
+See `example/lib/main.dart` for this conversion used throughout a real
+Flutter screen.
 
 ## What it implements
 
@@ -66,13 +88,11 @@ The **contrast module**, covering:
 ## Usage
 
 ```dart
-import 'dart:ui';
-
 import 'package:wcag_vision/wcag_vision.dart';
 
 void main() {
-  const foreground = Color(0xFF767676); // mid grey
-  const background = Color(0xFFFFFFFF); // white
+  const foreground = WcagColor(0xFF767676); // mid grey
+  const background = WcagColor(0xFFFFFFFF); // white
 
   final report = evaluateContrast(foreground, background);
 
@@ -81,7 +101,7 @@ void main() {
   print(report.passesAaaNormal); // false (< 7.0)
 
   // Translucent foregrounds are flattened onto the background first:
-  const overlay = Color.from(alpha: 0.5, red: 0, green: 0, blue: 0);
+  const overlay = WcagColor.from(alpha: 0.5, red: 0, green: 0, blue: 0);
   final overlayReport = evaluateContrast(overlay, background);
   print(overlayReport.ratio);    // contrast of the *effective* blended colour
 }
@@ -94,6 +114,8 @@ the raw calculations.
 ## Design principles
 
 - Fully offline and algorithmic — no data collection, no network access.
+- Pure Dart, no Flutter dependency — usable from CLI tools and servers, not
+  just Flutter apps.
 - Pure functions with deterministic outputs, unit-tested against reference
   values from the WCAG spec.
 - Part of a Melos monorepo; consumed by the `a11y_scanner` app the same way

@@ -1,6 +1,6 @@
 import 'dart:math' as math;
-import 'dart:ui';
 
+import 'package:wcag_vision/src/color/wcag_color.dart';
 import 'package:wcag_vision/src/cvd/cvd_type.dart';
 
 // ---------------------------------------------------------------------------
@@ -62,7 +62,7 @@ const List<double> _tritanopia = [
 /// (IEC 61966-2-1, thresholds 0.04045 / 0.0031308). This intentionally
 /// differs from `relativeLuminance` in the contrast module, which follows
 /// WCAG 2.x's own published variant of the formula.
-Color simulateCvd(Color color, CvdType type) {
+WcagColor simulateCvd(WcagColor color, CvdType type) {
   final m = switch (type) {
     CvdType.none => null,
     CvdType.protanopia => _protanopia,
@@ -75,11 +75,11 @@ Color simulateCvd(Color color, CvdType type) {
   final g = _srgbDecode(color.g);
   final b = _srgbDecode(color.b);
 
-  final simR = clampDouble(m[0] * r + m[1] * g + m[2] * b, 0, 1);
-  final simG = clampDouble(m[3] * r + m[4] * g + m[5] * b, 0, 1);
-  final simB = clampDouble(m[6] * r + m[7] * g + m[8] * b, 0, 1);
+  final simR = clampUnit(m[0] * r + m[1] * g + m[2] * b);
+  final simG = clampUnit(m[3] * r + m[4] * g + m[5] * b);
+  final simB = clampUnit(m[6] * r + m[7] * g + m[8] * b);
 
-  return Color.from(
+  return WcagColor.from(
     alpha: color.a,
     red: _srgbEncode(simR),
     green: _srgbEncode(simG),

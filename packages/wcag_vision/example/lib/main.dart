@@ -19,14 +19,37 @@
 //
 // The UI is intentionally plain Material — this is a functional demo of
 // the package API for pub.dev's example tab, not a product.
+//
+// wcag_vision is a pure-Dart package with no Flutter dependency (see its
+// README), so it has its own WcagColor type rather than using dart:ui's
+// Color. This example imports the package with a `wcag` prefix and
+// converts between the two colour types at the UI boundary with
+// _toWcagColor/_toFlutterColor below — exactly the one-line conversion a
+// consuming Flutter app is expected to do.
 
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:wcag_vision/wcag_vision.dart';
+import 'package:wcag_vision/wcag_vision.dart' as wcag;
 
 void main() => runApp(const WcagVisionExampleApp());
+
+/// Converts a Flutter [Color] to the package's [wcag.WcagColor].
+wcag.WcagColor _toWcagColor(Color color) => wcag.WcagColor.from(
+      alpha: color.a,
+      red: color.r,
+      green: color.g,
+      blue: color.b,
+    );
+
+/// Converts a [wcag.WcagColor] to a Flutter [Color].
+Color _toFlutterColor(wcag.WcagColor color) => Color.from(
+      alpha: color.a,
+      red: color.r,
+      green: color.g,
+      blue: color.b,
+    );
 
 /// Root widget of the example app.
 class WcagVisionExampleApp extends StatelessWidget {
@@ -54,9 +77,9 @@ class DemoScreen extends StatefulWidget {
 class _DemoScreenState extends State<DemoScreen> {
   // Local, presentation-only state: which deficiency the CVD section
   // renders. No business logic lives here, so plain setState is fine.
-  CvdType _cvdType = CvdType.none;
+  wcag.CvdType _cvdType = wcag.CvdType.none;
 
-  late final Future<List<ExtractedColor>> _extraction =
+  late final Future<List<wcag.ExtractedColor>> _extraction =
       _extractFromSampleAsset();
 
   /// Decodes the bundled sample image into pixels and extracts its
@@ -67,7 +90,7 @@ class _DemoScreenState extends State<DemoScreen> {
   /// external image source): a 64x64 PNG of four vertical flat-colour
   /// bars (navy / teal / amber / cream) with deliberately unequal widths,
   /// so the extracted shares are visibly different.
-  Future<List<ExtractedColor>> _extractFromSampleAsset() async {
+  Future<List<wcag.ExtractedColor>> _extractFromSampleAsset() async {
     final data = await rootBundle.load('assets/sample.png');
     final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
     final frame = await codec.getNextFrame();
@@ -75,16 +98,18 @@ class _DemoScreenState extends State<DemoScreen> {
         await frame.image.toByteData(); // defaults to raw RGBA 8888
     frame.image.dispose();
     final rgba = byteData!;
-    final pixels = <Color>[
+    final pixels = <wcag.WcagColor>[
       for (var i = 0; i < rgba.lengthInBytes; i += 4)
-        Color.fromARGB(
-          rgba.getUint8(i + 3),
-          rgba.getUint8(i),
-          rgba.getUint8(i + 1),
-          rgba.getUint8(i + 2),
+        _toWcagColor(
+          Color.fromARGB(
+            rgba.getUint8(i + 3),
+            rgba.getUint8(i),
+            rgba.getUint8(i + 1),
+            rgba.getUint8(i + 2),
+          ),
         ),
     ];
-    return extractDominantColorsAsync(pixels, k: 4);
+    return wcag.extractDominantColorsAsync(pixels, k: 4);
   }
 
   @override
@@ -108,12 +133,12 @@ class _DemoScreenState extends State<DemoScreen> {
           ),
           const Divider(height: 32),
           const _SectionTitle('2. CVD simulation (simulateCvd)'),
-          DropdownButton<CvdType>(
+          DropdownButton<wcag.CvdType>(
             value: _cvdType,
             onChanged: (type) =>
-                setState(() => _cvdType = type ?? CvdType.none),
+                setState(() => _cvdType = type ?? wcag.CvdType.none),
             items: [
-              for (final type in CvdType.values)
+              for (final type in wcag.CvdType.values)
                 DropdownMenuItem(value: type, child: Text(type.name)),
             ],
           ),
@@ -121,7 +146,11 @@ class _DemoScreenState extends State<DemoScreen> {
           Row(
             children: [
               for (final color in _palette) ...[
-                _Swatch(color: simulateCvd(color, _cvdType)),
+                _Swatch(
+                  color: _toFlutterColor(
+                    wcag.simulateCvd(_toWcagColor(color), _cvdType),
+                  ),
+                ),
                 const SizedBox(width: 8),
               ],
             ],
@@ -143,7 +172,7 @@ class _DemoScreenState extends State<DemoScreen> {
             ],
           ),
           const SizedBox(height: 8),
-          FutureBuilder<List<ExtractedColor>>(
+          FutureBuilder<List<wcag.ExtractedColor>>(
             future: _extraction,
             builder: (context, snapshot) {
               if (snapshot.hasError) {
@@ -157,7 +186,7 @@ class _DemoScreenState extends State<DemoScreen> {
                   for (final extracted in snapshot.data!) ...[
                     Column(
                       children: [
-                        _Swatch(color: extracted.color),
+                        _Swatch(color: _toFlutterColor(extracted.color)),
                         Text(
                           '${(extracted.share * 100).toStringAsFixed(1)}%',
                         ),
@@ -214,7 +243,10 @@ class _ContrastDemo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final report = evaluateContrast(foreground, background);
+    final report = wcag.evaluateContrast(
+      _toWcagColor(foreground),
+      _toWcagColor(background),
+    );
     return Row(
       children: [
         DecoratedBox(

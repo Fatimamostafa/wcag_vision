@@ -1,6 +1,6 @@
 import 'dart:math' as math;
-import 'dart:ui';
 
+import 'package:wcag_vision/src/color/wcag_color.dart';
 import 'package:wcag_vision/src/contrast/color_compositing.dart';
 import 'package:wcag_vision/src/contrast/relative_luminance.dart';
 
@@ -23,7 +23,7 @@ const double maxContrastRatio = 21;
 ///
 /// Reference:
 /// <https://www.w3.org/TR/WCAG21/#dfn-contrast-ratio>.
-double contrastRatio(Color a, Color b) {
+double contrastRatio(WcagColor a, WcagColor b) {
   final la = relativeLuminance(a);
   final lb = relativeLuminance(b);
   final lighter = math.max(la, lb);
@@ -43,7 +43,7 @@ double contrastRatio(Color a, Color b) {
 /// [background] is expected to be opaque; if it is not, its own alpha is
 /// carried through the composite and the resulting ratio should be treated as
 /// indicative only.
-double contrastRatioOver(Color foreground, Color background) {
+double contrastRatioOver(WcagColor foreground, WcagColor background) {
   final effectiveForeground = compositeOver(foreground, background);
   return contrastRatio(effectiveForeground, background);
 }

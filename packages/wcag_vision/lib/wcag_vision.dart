@@ -1,5 +1,11 @@
 /// wcag_vision — an offline, algorithmic WCAG accessibility engine.
 ///
+/// A pure-Dart package with no Flutter dependency: it runs anywhere Dart
+/// runs (CLI, server, web, and Flutter). Colours are represented with the
+/// package's own [WcagColor] rather than `dart:ui`'s `Color` — converting
+/// to and from Flutter's `Color` at your app's UI boundary is a one-line,
+/// lossless operation (see [WcagColor]'s dartdoc).
+///
 /// Modules:
 ///
 /// * **Contrast** — relative luminance, WCAG 2.x contrast ratios, alpha
@@ -12,6 +18,9 @@
 ///   one-shot analysis of a single captured frame.
 library;
 
+import 'package:wcag_vision/src/color/wcag_color.dart';
+
+export 'src/color/wcag_color.dart' show WcagColor;
 export 'src/color_extraction/extracted_color.dart';
 export 'src/color_extraction/k_means_extraction.dart';
 export 'src/contrast/color_compositing.dart';

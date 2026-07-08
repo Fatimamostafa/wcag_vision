@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- **Breaking:** the package is now pure Dart with no Flutter dependency,
+  so it can run outside Flutter (CLI tools, servers, web). All public APIs
+  (`evaluateContrast`, `simulateCvd`, `extractDominantColors`/`Async`,
+  `ExtractedColor`) now take/return the package's own `WcagColor` instead
+  of `dart:ui`'s `Color`. Converting to and from Flutter's `Color` at your
+  app's UI boundary is a one-line, lossless operation — see the README's
+  "Using it from Flutter" section.
+- Tests migrated from `flutter_test` to `package:test`; CI and the Melos
+  `test` script split into `test:dart` (pure-Dart packages) and
+  `test:flutter` (Flutter packages/apps) accordingly.
+
 ## [0.0.2] - 2026-07-05
 
 - Housekeeping release: no functional changes. Re-published after making

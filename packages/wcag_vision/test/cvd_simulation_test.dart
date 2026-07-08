@@ -1,15 +1,32 @@
 import 'dart:math' as math;
-import 'dart:ui';
 
-import 'package:flutter/painting.dart' show HSVColor;
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:wcag_vision/wcag_vision.dart';
 
-const Color black = Color(0xFF000000);
-const Color white = Color(0xFFFFFFFF);
-const Color red = Color(0xFFFF0000);
-const Color green = Color(0xFF00FF00);
-const Color blue = Color(0xFF0000FF);
+const WcagColor black = WcagColor(0xFF000000);
+const WcagColor white = WcagColor(0xFFFFFFFF);
+const WcagColor red = WcagColor(0xFFFF0000);
+const WcagColor green = WcagColor(0xFF00FF00);
+const WcagColor blue = WcagColor(0xFF0000FF);
+
+/// The HSV hue of [color], in degrees `[0, 360)`. Standard formula — the
+/// same one Flutter's `HSVColor.fromColor` uses internally, reimplemented
+/// here so this test suite has no Flutter dependency.
+double _hueOf(WcagColor color) {
+  final maxC = math.max(color.r, math.max(color.g, color.b));
+  final minC = math.min(color.r, math.min(color.g, color.b));
+  final delta = maxC - minC;
+  if (delta == 0) return 0;
+  double hue;
+  if (maxC == color.r) {
+    hue = 60 * (((color.g - color.b) / delta) % 6);
+  } else if (maxC == color.g) {
+    hue = 60 * (((color.b - color.r) / delta) + 2);
+  } else {
+    hue = 60 * (((color.r - color.g) / delta) + 4);
+  }
+  return hue < 0 ? hue + 360 : hue;
+}
 
 const List<CvdType> dichromacies = [
   CvdType.protanopia,
@@ -18,7 +35,7 @@ const List<CvdType> dichromacies = [
 ];
 
 /// Euclidean distance between two colours in gamma-encoded sRGB space.
-double rgbDistance(Color a, Color b) {
+double rgbDistance(WcagColor a, WcagColor b) {
   final dr = a.r - b.r;
   final dg = a.g - b.g;
   final db = a.b - b.b;
@@ -28,14 +45,14 @@ double rgbDistance(Color a, Color b) {
 void main() {
   group('simulateCvd — CvdType.none', () {
     test('is the identity for arbitrary colours', () {
-      const samples = <Color>[
+      const samples = <WcagColor>[
         black,
         white,
         red,
         green,
         blue,
-        Color(0xFF123456),
-        Color(0x80ABCDEF),
+        WcagColor(0xFF123456),
+        WcagColor(0x80ABCDEF),
       ];
       for (final color in samples) {
         expect(simulateCvd(color, CvdType.none), color);
@@ -50,7 +67,7 @@ void main() {
       // decode -> multiply -> encode round trip).
       for (final type in dichromacies) {
         for (var v = 0; v <= 255; v += 51) {
-          final grey = Color.fromARGB(255, v, v, v);
+          final grey = WcagColor.fromARGB(255, v, v, v);
           final sim = simulateCvd(grey, type);
           expect(sim.r, closeTo(grey.r, 1e-4), reason: '$type grey $v (r)');
           expect(sim.g, closeTo(grey.g, 1e-4), reason: '$type grey $v (g)');
@@ -89,13 +106,11 @@ void main() {
       // Dichromatic confusion is chromatic: protanopia also darkens red, so
       // a plain RGB distance keeps a large *lightness* gap. The defining
       // symptom is that both primaries end up the same yellowish hue.
-      double hueOf(Color color) => HSVColor.fromColor(color).hue;
-
-      expect(hueOf(green) - hueOf(red), 120); // sanity: 120 deg apart
+      expect(_hueOf(green) - _hueOf(red), 120); // sanity: 120 deg apart
       for (final type in [CvdType.protanopia, CvdType.deuteranopia]) {
-        final hueDelta =
-            (hueOf(simulateCvd(red, type)) - hueOf(simulateCvd(green, type)))
-                .abs();
+        final hueDelta = (_hueOf(simulateCvd(red, type)) -
+                _hueOf(simulateCvd(green, type)))
+            .abs();
         expect(
           hueDelta,
           lessThan(15),
@@ -130,7 +145,8 @@ void main() {
 
   group('simulateCvd — alpha handling', () {
     test('the alpha channel passes through unchanged', () {
-      const translucent = Color.from(alpha: 0.5, red: 1, green: 0.4, blue: 0);
+      const translucent =
+          WcagColor.from(alpha: 0.5, red: 1, green: 0.4, blue: 0);
       for (final type in CvdType.values) {
         expect(simulateCvd(translucent, type).a, closeTo(0.5, 1e-9));
       }

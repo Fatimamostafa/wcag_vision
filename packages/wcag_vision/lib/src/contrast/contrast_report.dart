@@ -1,6 +1,5 @@
-import 'dart:ui';
-
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
+import 'package:wcag_vision/src/color/wcag_color.dart';
 import 'package:wcag_vision/src/contrast/contrast_ratio.dart';
 import 'package:wcag_vision/src/contrast/wcag_thresholds.dart';
 
@@ -54,5 +53,5 @@ class ContrastReport {
 /// A possibly semi-transparent [foreground] is alpha-composited over
 /// [background] first (see `contrastRatioOver`), so translucent colours are
 /// handled correctly. [background] is expected to be opaque.
-ContrastReport evaluateContrast(Color foreground, Color background) =>
+ContrastReport evaluateContrast(WcagColor foreground, WcagColor background) =>
     ContrastReport(ratio: contrastRatioOver(foreground, background));

@@ -1,14 +1,12 @@
-import 'dart:ui';
-
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:wcag_vision/wcag_vision.dart';
 
 // Shared opaque test colours.
-const Color black = Color(0xFF000000);
-const Color white = Color(0xFFFFFFFF);
-const Color red = Color(0xFFFF0000);
-const Color green = Color(0xFF00FF00);
-const Color blue = Color(0xFF0000FF);
+const WcagColor black = WcagColor(0xFF000000);
+const WcagColor white = WcagColor(0xFFFFFFFF);
+const WcagColor red = WcagColor(0xFFFF0000);
+const WcagColor green = WcagColor(0xFF00FF00);
+const WcagColor blue = WcagColor(0xFF0000FF);
 
 void main() {
   group('relativeLuminance', () {
@@ -24,8 +22,8 @@ void main() {
     });
 
     test('ignores the alpha channel', () {
-      const translucentBlack = Color(0x00000000);
-      const translucentWhite = Color(0x00FFFFFF);
+      const translucentBlack = WcagColor(0x00000000);
+      const translucentWhite = WcagColor(0x00FFFFFF);
       expect(
         relativeLuminance(translucentBlack),
         closeTo(relativeLuminance(black), 1e-12),
@@ -39,7 +37,7 @@ void main() {
     test('is monotonic across a grey ramp', () {
       var previous = -1.0;
       for (var v = 0; v <= 255; v += 15) {
-        final grey = Color.fromARGB(255, v, v, v);
+        final grey = WcagColor.fromARGB(255, v, v, v);
         final lum = relativeLuminance(grey);
         expect(lum, greaterThanOrEqualTo(previous));
         previous = lum;
@@ -65,11 +63,11 @@ void main() {
     });
 
     test('stays within [1.0, 21.0] for arbitrary pairs', () {
-      final pairs = <(Color, Color)>[
+      final pairs = <(WcagColor, WcagColor)>[
         (red, green),
         (green, blue),
-        (const Color(0xFF777777), white),
-        (const Color(0xFF123456), const Color(0xFFABCDEF)),
+        (const WcagColor(0xFF777777), white),
+        (const WcagColor(0xFF123456), const WcagColor(0xFFABCDEF)),
       ];
       for (final (a, b) in pairs) {
         final ratio = contrastRatio(a, b);
@@ -79,7 +77,7 @@ void main() {
     });
 
     test('matches a known reference value (#767676 on white ~ 4.54)', () {
-      const grey = Color(0xFF767676);
+      const grey = WcagColor(0xFF767676);
       expect(contrastRatio(grey, white), closeTo(4.54, 0.01));
     });
   });
@@ -90,12 +88,12 @@ void main() {
     });
 
     test('returns the background unchanged when foreground is transparent', () {
-      const clear = Color(0x00123456);
+      const clear = WcagColor(0x00123456);
       expect(compositeOver(clear, white), white);
     });
 
     test('blends a 50% black foreground over white to mid-grey', () {
-      const halfBlack = Color.from(alpha: 0.5, red: 0, green: 0, blue: 0);
+      const halfBlack = WcagColor.from(alpha: 0.5, red: 0, green: 0, blue: 0);
       final result = compositeOver(halfBlack, white);
       expect(result.a, closeTo(1, 1e-12));
       expect(result.r, closeTo(0.5, 1e-12));
@@ -104,16 +102,16 @@ void main() {
     });
 
     test('produces a partially transparent result over a translucent bg', () {
-      const halfRed = Color.from(alpha: 0.5, red: 1, green: 0, blue: 0);
-      const halfBlue = Color.from(alpha: 0.5, red: 0, green: 0, blue: 1);
+      const halfRed = WcagColor.from(alpha: 0.5, red: 1, green: 0, blue: 0);
+      const halfBlue = WcagColor.from(alpha: 0.5, red: 0, green: 0, blue: 1);
       final result = compositeOver(halfRed, halfBlue);
       // outA = 0.5 + 0.5 * 0.5 = 0.75
       expect(result.a, closeTo(0.75, 1e-12));
     });
 
     test('returns transparent black when both inputs are transparent', () {
-      const clearA = Color(0x00FF0000);
-      const clearB = Color(0x0000FF00);
+      const clearA = WcagColor(0x00FF0000);
+      const clearB = WcagColor(0x0000FF00);
       final result = compositeOver(clearA, clearB);
       expect(result.a, closeTo(0, 1e-12));
     });
@@ -190,10 +188,10 @@ void main() {
     });
 
     test('flattens a translucent foreground before measuring', () {
-      const halfBlack = Color.from(alpha: 0.5, red: 0, green: 0, blue: 0);
+      const halfBlack = WcagColor.from(alpha: 0.5, red: 0, green: 0, blue: 0);
       final translucent = evaluateContrast(halfBlack, white);
       final opaqueGrey = evaluateContrast(
-        const Color.from(alpha: 1, red: 0.5, green: 0.5, blue: 0.5),
+        const WcagColor.from(alpha: 1, red: 0.5, green: 0.5, blue: 0.5),
         white,
       );
       // A 50% black over white is exactly mid-grey, so the ratios match.

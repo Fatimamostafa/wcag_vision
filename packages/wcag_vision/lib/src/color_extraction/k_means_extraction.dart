@@ -1,8 +1,8 @@
 import 'dart:isolate';
 import 'dart:math' as math;
 import 'dart:typed_data';
-import 'dart:ui';
 
+import 'package:wcag_vision/src/color/wcag_color.dart';
 import 'package:wcag_vision/src/color_extraction/extracted_color.dart';
 
 /// Default number of clusters ([extractDominantColors]'s `k`).
@@ -49,7 +49,7 @@ const int defaultMaxSamples = 4096;
 /// ## Algorithm
 ///
 /// Standard Lloyd's k-means over the gamma-encoded sRGB components
-/// (`Color.r/g/b`), initialised with **k-means++** seeding:
+/// (`WcagColor.r/g/b`), initialised with **k-means++** seeding:
 ///
 /// * D. Arthur and S. Vassilvitskii, "k-means++: The Advantages of Careful
 ///   Seeding", Proc. 18th ACM-SIAM Symposium on Discrete Algorithms
@@ -91,7 +91,7 @@ const int defaultMaxSamples = 4096;
 /// Throws [ArgumentError] if [pixels] is empty or any numeric parameter is
 /// out of range.
 List<ExtractedColor> extractDominantColors(
-  List<Color> pixels, {
+  List<WcagColor> pixels, {
   int k = defaultClusterCount,
   int seed = 0,
   int maxIterations = defaultMaxIterations,
@@ -296,11 +296,11 @@ List<ExtractedColor> extractDominantColors(
   return [
     for (final j in indices)
       ExtractedColor(
-        color: Color.from(
+        color: WcagColor.from(
           alpha: 1,
-          red: clampDouble(cr[j], 0, 1),
-          green: clampDouble(cg[j], 0, 1),
-          blue: clampDouble(cb[j], 0, 1),
+          red: clampUnit(cr[j]),
+          green: clampUnit(cg[j]),
+          blue: clampUnit(cb[j]),
         ),
         share: counts[j] / sampleCount,
       ),
@@ -328,7 +328,7 @@ List<ExtractedColor> extractDominantColors(
 /// layer (see the architecture doc's concurrency rules) — and is
 /// deliberately out of scope for this package.
 Future<List<ExtractedColor>> extractDominantColorsAsync(
-  List<Color> pixels, {
+  List<WcagColor> pixels, {
   int k = defaultClusterCount,
   int seed = 0,
   int maxIterations = defaultMaxIterations,

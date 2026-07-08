@@ -1,4 +1,4 @@
-import 'dart:ui';
+import 'package:wcag_vision/src/color/wcag_color.dart';
 
 /// Alpha-composites [foreground] over [background] using the Porter-Duff
 /// "source-over" operator, returning the resulting blended colour.
@@ -19,18 +19,18 @@ import 'dart:ui';
 ///
 /// When [background] is opaque (the usual case) the result is also opaque and
 /// ready to pass to `relativeLuminance` / `contrastRatio`.
-Color compositeOver(Color foreground, Color background) {
+WcagColor compositeOver(WcagColor foreground, WcagColor background) {
   final fa = foreground.a;
   if (fa >= 1.0) return foreground;
   if (fa <= 0.0) return background;
 
   final ba = background.a;
   final outA = fa + ba * (1.0 - fa);
-  if (outA <= 0.0) return const Color(0x00000000);
+  if (outA <= 0.0) return const WcagColor(0x00000000);
 
   double blend(double f, double b) => (f * fa + b * ba * (1.0 - fa)) / outA;
 
-  return Color.from(
+  return WcagColor.from(
     alpha: outA,
     red: blend(foreground.r, background.r),
     green: blend(foreground.g, background.g),

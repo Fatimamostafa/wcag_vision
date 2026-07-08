@@ -1,5 +1,6 @@
 import 'dart:math' as math;
-import 'dart:ui';
+
+import 'package:wcag_vision/src/color/wcag_color.dart';
 
 /// The sRGB companding threshold below which the transfer function is linear,
 /// as specified by WCAG 2.x. (The sRGB standard itself uses 0.04045; WCAG's
@@ -18,7 +19,7 @@ const double _srgbLinearThreshold = 0.03928;
 ///
 /// Reference:
 /// <https://www.w3.org/TR/WCAG21/#dfn-relative-luminance>.
-double relativeLuminance(Color color) {
+double relativeLuminance(WcagColor color) {
   final r = _linearizeChannel(color.r);
   final g = _linearizeChannel(color.g);
   final b = _linearizeChannel(color.b);
